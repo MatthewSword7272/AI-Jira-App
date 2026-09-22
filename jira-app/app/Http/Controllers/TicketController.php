@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ticket;
+use App\Services\TicketParser;
 use Illuminate\Http\Request;
 
 class TicketController extends Controller
@@ -61,5 +62,28 @@ class TicketController extends Controller
     public function destroy(Ticket $ticket)
     {
         //
+    }
+
+    public function storeFromAI(Request $request, TicketParser $ticketParser)
+    {
+        $request->validate(['message' => 'required|string|max:2000']);
+
+        try {
+            $data = $ticketParser->parse($request->input('message'));
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->withErrors(['message' => 'Could not create a ticket from that. Try rephrasing.']);
+        }
+
+        $validated = validator($data, [
+            'title' => 'required|string|max:500',
+            'description' => 'required|string|max:500',
+            'severity' => 'required|string|in:high,medium,low',
+            'due_date' => 'required|date',
+        ])->validate();
+
+        Ticket::create([...$validated, 'status' => 'Backlog']);
+
+        return back();
     }
 }

@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/carousel';
 import AddTicket from '@/components/add-ticket';
 import { Ticket } from '@/types';
+import AddAITicket from '@/components/add-ai-ticket';
 
 export default function Welcome({
   tickets,
@@ -62,6 +63,7 @@ export default function Welcome({
               </>
             )}
             <AddTicket severities={severities} />
+            <AddAITicket />
           </nav>
         </header>
         <div className='w-full'>
