@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Textarea } from './ui/textarea';
 import { useForm } from '@inertiajs/react';
 import { Button } from './ui/button';
+import { Mosaic } from 'react-loading-indicators';
 
 export default function AddAITicket() {
   const [open, setOpen] = useState(false);
@@ -30,20 +31,35 @@ export default function AddAITicket() {
         </DialogTrigger>
         <DialogContent className={'bg-white'}>
           <DialogTitle>Create New Ticket</DialogTitle>
-          <form onSubmit={submit} className='flex flex-col gap-3'>
-            <Textarea
-              onChange={(e) => setData('message', e.target.value)}
-              value={data.message}
-              disabled={processing}
-              placeholder='e.g. "Checkout crashes on Safari, urgent, need it fixed by Friday"'
-            ></Textarea>
-            {errors.message && (
-              <p className='text-sm text-red-600'>{errors.message}</p>
-            )}
-            <Button type='submit' disabled={processing || !data.message.trim()}>
-              {processing ? 'Creating…' : 'Create ticket'}
-            </Button>
-          </form>
+          {!processing ? (
+            <form onSubmit={submit} className='flex flex-col gap-3'>
+              <Textarea
+                onChange={(e) => setData('message', e.target.value)}
+                value={data.message}
+                disabled={processing}
+                placeholder='e.g. "Checkout crashes on Safari, urgent, need it fixed by Friday"'
+              ></Textarea>
+
+              {errors.message && (
+                <p className='text-sm text-red-600'>{errors.message}</p>
+              )}
+              <Button
+                type='submit'
+                disabled={processing || !data.message.trim()}
+              >
+                {processing ? 'Creating…' : 'Create ticket'}
+              </Button>
+            </form>
+          ) : (
+            <div className='mx-auto'>
+              <Mosaic
+                color='#9f9f9f8c'
+                size='small'
+                text='Processing...'
+                textColor='black'
+              />
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

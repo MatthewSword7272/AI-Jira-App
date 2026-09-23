@@ -57,27 +57,29 @@ export function TicketItem({ ticket, index, column }: TicketItemType) {
       <TicketModal open={open} onOpenChange={setOpen} ticket={ticket} />
       <div
         onClick={() => setOpen(true)}
-        className={`column-item relative flex justify-between flex-col h-35 z-20 border border-slate-400 p-2 shadow hover:shadow-2xl transition-shadow m-3 rounded-md bg-white ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+        className={`column-item relative z-20 m-3 flex h-35 flex-col justify-between rounded-md border border-slate-400 bg-white p-2 shadow transition-shadow hover:shadow-2xl ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         ref={ref}
         data-dragging={isDragging}
       >
         <div>
-          <h3>{title}</h3>
-          <p className='text-sm truncate'>{description}</p>
+          <div className='flex'>
+            <h3 className='flex-1'>{title}</h3>
+            <div
+              className={`flex size-7 items-center justify-center rounded-full font-bold text-white ${severityColors[severity]}`}
+            >
+              {severity.charAt(0).toUpperCase()}
+            </div>
+          </div>
+          <p className='line-clamp-2 text-sm'>{description}</p>
         </div>
         <div
-          className={`text-sm rounded-sm p-1 w-20 flex items-center justify-center gap-1 ${dateStyle}`}
+          className={`flex w-fit items-center justify-center gap-1 rounded-sm p-1 text-sm ${dateStyle}`}
         >
           <TimerIcon size={16} className='text-gray-800/50' />
           {new Date(due_date).toLocaleDateString('en-AU', {
             day: '2-digit',
             month: 'short',
           })}
-        </div>
-        <div
-          className={`flex items-center justify-center absolute right-3 top-2 rounded-full text-white size-7 font-bold ${severityColors[severity]}`}
-        >
-          {severity.charAt(0).toUpperCase()}
         </div>
       </div>
     </>
@@ -149,7 +151,7 @@ const Detail = ({
   children: ReactNode;
 }) => (
   <div className='space-y-1.5'>
-    <dt className='flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-slate-400'>
+    <dt className='flex items-center gap-1.5 text-xs font-medium tracking-wider text-slate-400 uppercase'>
       <Icon size={14} />
       {label}
     </dt>
@@ -179,7 +181,7 @@ const TicketModal = ({ open, onOpenChange, ticket }: TicketModalProps) => {
         <div className='grid md:grid-cols-[1fr_16rem]'>
           <div className='space-y-6 p-6 md:p-8'>
             <div className='space-y-2'>
-              <DialogTitle className='text-2xl font-semibold leading-tight text-slate-900'>
+              <DialogTitle className='text-2xl leading-tight font-semibold text-slate-900'>
                 {title}
               </DialogTitle>
             </div>
@@ -187,11 +189,11 @@ const TicketModal = ({ open, onOpenChange, ticket }: TicketModalProps) => {
             <section>
               <h4 className='mb-2 font-semibold'>Description</h4>
               {description ? (
-                <DialogDescription className='whitespace-pre-wrap text-sm leading-relaxed text-slate-700'>
+                <DialogDescription className='text-sm leading-relaxed whitespace-pre-wrap text-slate-700'>
                   {description}
                 </DialogDescription>
               ) : (
-                <p className='text-sm italic text-slate-400'>
+                <p className='text-sm text-slate-400 italic'>
                   No description provided.
                 </p>
               )}
@@ -201,7 +203,7 @@ const TicketModal = ({ open, onOpenChange, ticket }: TicketModalProps) => {
           <aside className='border-t border-slate-100 bg-slate-50/70 p-6 md:border-t-0 md:border-l'>
             <dl className='space-y-5'>
               <Detail label='Status' icon={CircleDotIcon}>
-                <span className='inline-flex rounded-md bg-slate-900 px-2 py-0.5 text-xs font-medium capitalize text-white'>
+                <span className='inline-flex rounded-md bg-slate-900 px-2 py-0.5 text-xs font-medium text-white capitalize'>
                   {status.replace(/[_-]/g, ' ')}
                 </span>
               </Detail>

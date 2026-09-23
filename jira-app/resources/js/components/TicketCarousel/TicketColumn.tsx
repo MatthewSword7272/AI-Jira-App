@@ -4,10 +4,12 @@ import { ReactNode } from 'react';
 
 export function TicketColumn({
   children,
+  status,
   id,
 }: {
   children: ReactNode;
   id: string;
+  status: string;
 }) {
   const { isDropTarget, ref } = useDroppable({
     id,
@@ -21,10 +23,15 @@ export function TicketColumn({
   return (
     <div
       style={style}
-      className={`border border-white rounded-md h-160 w-60 bg-white! text-black opacity-100 transition-opacity duration-750 starting:opacity-0`}
+      className={`relative flex h-160 w-60 flex-col overflow-hidden rounded-md border border-white bg-white! text-black opacity-100 transition-opacity duration-750 starting:opacity-0`}
       ref={ref}
     >
-      {children}
+      <div className='w-full shrink-0 border-b border-slate-400 p-2'>
+        {status}
+      </div>
+      <div className='ticket-column min-h-0 flex-1 overflow-y-auto'>
+        {children}
+      </div>
     </div>
   );
 }

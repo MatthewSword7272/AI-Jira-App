@@ -107,12 +107,8 @@ export default function Welcome({
                 <CarouselContent>
                   {statuses.map((status, index) => (
                     <CarouselItem key={index} className='basis-auto'>
-                      <TicketColumn id={status}>
+                      <TicketColumn id={status} status={status}>
                         <>
-                          <div className='border-b border-slate-400 w-full p-2'>
-                            {status}
-                          </div>
-
                           {(items[status] ?? []).map((ticket, index) => {
                             return (
                               <TicketItem
