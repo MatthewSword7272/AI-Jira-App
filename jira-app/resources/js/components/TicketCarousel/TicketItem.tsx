@@ -7,6 +7,7 @@ import {
   FlagIcon,
   HistoryIcon,
   TimerIcon,
+  Trash,
   type LucideIcon,
 } from 'lucide-react';
 import {
@@ -16,6 +17,9 @@ import {
   DialogTitle,
 } from '../ui/dialog';
 import { useState, type ReactNode } from 'react';
+import { Button } from '../ui/button';
+import { toast } from '../ui/toast';
+import { router, useForm } from '@inertiajs/react';
 
 interface TicketItemType {
   ticket: Ticket;
@@ -170,33 +174,105 @@ const TicketModal = ({ open, onOpenChange, ticket }: TicketModalProps) => {
     created_at,
     updated_at,
   } = ticket;
+
   const styles = severityStyles[severity];
   const due = dueStatus(due_date);
+
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const { data, setData, patch, processing, errors } = useForm({
+    id: id,
+    title: title,
+    status: status,
+    description: description,
+    severity: severity,
+    due_date: due_date,
+  });
+
+  function changeTicket(e: React.SubmitEvent) {
+    e.preventDefault();
+    patch(`/ticket/${id}`, {
+      preserveScroll: true,
+      onSuccess: () => {
+        toast.add({
+          type: 'success',
+          title: 'Ticket Updated',
+        });
+      },
+      onError: () => {
+        toast.add({
+          type: 'error',
+          title: 'Could not update ticket',
+        });
+      },
+    });
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='gap-0 overflow-hidden bg-white p-0 sm:max-w-3xl'>
         <div className={`h-1.5 bg-linear-to-r ${styles.bar}`} />
 
-        <div className='grid md:grid-cols-[1fr_16rem]'>
+        <form onSubmit={changeTicket} className='grid md:grid-cols-[1fr_16rem]'>
           <div className='space-y-6 p-6 md:p-8'>
             <div className='space-y-2'>
-              <DialogTitle className='text-2xl leading-tight font-semibold text-slate-900'>
-                {title}
+              <DialogTitle>
+                <input
+                  onChange={(e) => {
+                    setData('title', e.target.value);
+                  }}
+                  defaultValue={data.title}
+                  className='w-full rounded-md border border-transparent bg-transparent px-2 py-1 text-2xl leading-tight font-semibold text-slate-900 hover:border-slate-200 focus:border-slate-300 focus:outline-none'
+                />
               </DialogTitle>
             </div>
 
-            <section>
+            <section className='h-46.25 overflow-y-auto'>
               <h4 className='mb-2 font-semibold'>Description</h4>
-              {description ? (
-                <DialogDescription className='text-sm leading-relaxed whitespace-pre-wrap text-slate-700'>
-                  {description}
+              {data.description ? (
+                <DialogDescription className={'h-full'}>
+                  <textarea
+                    className='h-full w-full text-sm leading-relaxed whitespace-pre-wrap text-slate-700'
+                    defaultValue={data.description}
+                  />
                 </DialogDescription>
               ) : (
                 <p className='text-sm text-slate-400 italic'>
                   No description provided.
                 </p>
               )}
+            </section>
+            <section className='flex gap-2'>
+              <Button disabled={processing} onClick={changeTicket}>
+                Update
+              </Button>
+              <Button
+                variant={'destructive'}
+                disabled={isDeleting}
+                onClick={() => {
+                  setIsDeleting(true);
+                  router.delete(`/ticket/${id}`, {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                      toast.add({
+                        type: 'success',
+                        title: 'Ticket Deleted',
+                      });
+                      onOpenChange(false);
+                    },
+                    onError: () => {
+                      toast.add({
+                        type: 'error',
+                        title: 'Could not delete ticket',
+                      });
+                    },
+                    onFinish: () => setIsDeleting(false),
+                  });
+                }}
+              >
+                <Trash />
+                Delete
+              </Button>
             </section>
           </div>
 
@@ -238,7 +314,7 @@ const TicketModal = ({ open, onOpenChange, ticket }: TicketModalProps) => {
               </div>
             </dl>
           </aside>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

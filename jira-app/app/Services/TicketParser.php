@@ -32,7 +32,7 @@ class TicketParser
                             'title' => ['type' => 'string'],
                             'description' => ['type' => 'string'],
                             'severity' => ['type' => 'string', 'enum' => $severities],
-                            'due_date' => ['type' => 'string', 'description' => 'DD-MM-YYYY'],
+                            'due_date' => ['type' => 'string', 'description' => 'YYYY-MM-DD'],
                         ],
                         'required' => ['title', 'description', 'severity', 'due_date'],
                         'additionalProperties' => false,

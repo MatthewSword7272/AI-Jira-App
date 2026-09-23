@@ -11,7 +11,7 @@ export default function AddAITicket() {
     message: '',
   });
 
-  const submit = (e: React.FormEvent) => {
+  const submit = (e: React.SubmitEvent) => {
     e.preventDefault();
 
     post('/ticket/ai', {

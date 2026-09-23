@@ -1,10 +1,10 @@
-import { router, useForm } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
 import { TicketValidator } from '@/lib/validator';
 import { Button } from './ui/button';
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import {
   Select,
   SelectContent,
@@ -30,7 +30,7 @@ export default function AddTicket({ severities }: { severities: string[] }) {
 
   const [open, setOpen] = useState(false);
 
-  function submitTicket(e: FormEvent<HTMLFormElement>) {
+  function submitTicket(e: SubmitEvent) {
     e.preventDefault();
     console.log(formData);
     try {
@@ -47,7 +47,7 @@ export default function AddTicket({ severities }: { severities: string[] }) {
   return (
     <div>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger className='bg-white text-black px-5 py-2 rounded cursor-pointer hover:shadow-2xl hover:bg-gray-200 duration-200 ease-linear'>
+        <DialogTrigger className='cursor-pointer rounded bg-white px-5 py-2 text-black duration-200 ease-linear hover:bg-gray-200 hover:shadow-2xl'>
           Add Ticket
         </DialogTrigger>
         <DialogContent className={'bg-white'}>

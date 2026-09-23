@@ -49,6 +49,23 @@ class TicketController extends Controller
     {
         $validated = $request->validate([
             'status' => 'required|string',
+            'title' => 'required|string',
+            'description' => 'required|string|max:500',
+            'severity' => 'required|string|in:high,medium,low',
+            'due_date' => 'required|date'
+        ]);
+
+        $ticket->update($validated);
+
+        return back();
+    }
+    /**
+     * Update the specified resource in storage.
+     */
+    public function updateStatus(Request $request, Ticket $ticket)
+    {
+        $validated = $request->validate([
+            'status' => 'required|string',
         ]);
 
         $ticket->update($validated);
@@ -61,7 +78,9 @@ class TicketController extends Controller
      */
     public function destroy(Ticket $ticket)
     {
-        //
+        $ticket->delete();
+
+        return back();
     }
 
     public function storeFromAI(Request $request, TicketParser $ticketParser)

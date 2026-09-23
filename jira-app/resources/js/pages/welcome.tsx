@@ -84,7 +84,7 @@ export default function Welcome({
                 if (!original || original.status === source.group) return;
 
                 router.patch(
-                  `/ticket/${source.id}`,
+                  `/ticket/updateStatus/${source.id}`,
                   { status: source.group },
                   { preserveScroll: true, preserveState: true },
                 );
