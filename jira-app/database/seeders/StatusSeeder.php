@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\StatusEnum;
 use App\Models\Status;
 use Illuminate\Database\Seeder;
 
@@ -12,7 +13,7 @@ class StatusSeeder extends Seeder
      */
     public function run(): void
     {
-        $statuses = ['Backlog', 'Pending', 'In Progress', 'QA', 'Completed'];
+        $statuses = [StatusEnum::Backlog, StatusEnum::Pending, StatusEnum::InProgress, StatusEnum::QA, StatusEnum::Completed];
 
         foreach ($statuses as $name) {
             Status::firstOrCreate(['name' => $name]);

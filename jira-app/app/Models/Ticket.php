@@ -13,6 +13,7 @@ class Ticket extends Model
         'description',
         'severity',
         'status',
-        'due_date'
+        'due_date',
+        'user_id',
     ];
 }

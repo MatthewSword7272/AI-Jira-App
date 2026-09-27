@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Enums\SeverityEnum;
 use App\Models\Severity;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class SeveritySeeder extends Seeder
@@ -13,7 +13,7 @@ class SeveritySeeder extends Seeder
      */
     public function run(): void
     {
-        $severities = ['low', 'medium', 'high'];
+        $severities = [SeverityEnum::Low, SeverityEnum::Medium, SeverityEnum::High];
 
         foreach ($severities as $name) {
             Severity::firstOrCreate(['name' => $name]);

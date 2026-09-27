@@ -26,6 +26,7 @@ import {
 } from '../ui/select';
 import { formatDate, formatStatus, severityOptions } from '@/lib/utils';
 import { Ticket } from '@/types';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -60,12 +61,10 @@ const severityStyles: Record<
 };
 
 const dueStatus = (dueDate: string) => {
-  const startOfDay = (date: Date) =>
-    new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-
   const days = Math.round(
-    (startOfDay(new Date(dueDate)) - startOfDay(new Date())) / 86_400_000,
+    (new Date(dueDate).getTime() - new Date().getTime()) / 86_400_000,
   );
+
   const plural = (n: number) => `${n} day${n === 1 ? '' : 's'}`;
 
   if (days === 0)
@@ -105,8 +104,6 @@ export default function TicketModal({
     updated_at,
   } = ticket;
 
-  const due = dueStatus(due_date);
-
   const statusOptions = statuses.map((value) => ({
     value,
     label: formatStatus(value),
@@ -114,14 +111,16 @@ export default function TicketModal({
 
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { data, setData, patch, processing, errors } = useForm({
+  const { data, setData, patch, processing, errors, isDirty } = useForm({
     id: id,
     title: title,
-    status: status,
     description: description,
     severity: severity,
+    status: status,
     due_date: due_date,
   });
+
+  const due = dueStatus(due_date);
 
   const styles = severityStyles[data.severity];
 
@@ -214,140 +213,140 @@ export default function TicketModal({
   };
 
   return (
-    <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className='gap-0 overflow-hidden bg-white p-0 sm:max-w-3xl'>
-          <div className={`h-1.5 bg-linear-to-r ${styles.bar}`} />
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className='gap-0 overflow-hidden bg-white p-0 sm:max-w-3xl'>
+        <div className={`h-1.5 bg-linear-to-r ${styles.bar}`} />
 
-          <form
-            onSubmit={changeTicket}
-            className='grid md:grid-cols-[1fr_16rem]'
-          >
-            <div className='space-y-6 p-6 md:p-8'>
-              <div className='space-y-2'>
-                <DialogTitle>
-                  <input
-                    onChange={(e) => {
-                      setData('title', e.target.value);
-                    }}
-                    defaultValue={data.title}
-                    className='w-full rounded-md border border-transparent bg-transparent px-2 py-1 text-2xl leading-tight font-semibold text-slate-900 hover:border-slate-200 focus:border-slate-300 focus:outline-none'
-                  />
-                </DialogTitle>
-              </div>
-
-              <section className='h-46.25 overflow-y-auto'>
-                <h4 className='mb-2 font-semibold'>Description</h4>
-                {data.description ? (
-                  <DialogDescription className={'h-full'}>
-                    <textarea
-                      onChange={(e) => {
-                        setData('description', e.target.value);
-                      }}
-                      className='h-full w-full text-sm leading-relaxed whitespace-pre-wrap text-slate-700'
-                      defaultValue={data.description}
-                    />
-                  </DialogDescription>
-                ) : (
-                  <p className='text-sm text-slate-400 italic'>
-                    No description provided.
-                  </p>
-                )}
-              </section>
-              <section className='flex gap-2'>
-                <Button type='submit' disabled={processing}>
-                  Update
-                </Button>
-                {DeleteAlertModal()}
-              </section>
+        <form onSubmit={changeTicket} className='grid md:grid-cols-[1fr_16rem]'>
+          <div className='space-y-6 p-6 md:p-8'>
+            <div className='space-y-2'>
+              <DialogTitle>
+                <input
+                  onChange={(e) => {
+                    setData('title', e.target.value);
+                  }}
+                  defaultValue={data.title}
+                  className='w-full rounded-md border border-transparent bg-transparent px-2 py-1 text-2xl leading-tight font-semibold text-slate-900 hover:border-slate-200 focus:border-slate-300 focus:outline-none'
+                />
+              </DialogTitle>
             </div>
 
-            <aside className='border-t border-slate-100 bg-slate-50/70 p-6 md:border-t-0 md:border-l'>
-              <dl className='space-y-5'>
-                <Detail label='Status' icon={CircleDotIcon}>
-                  <Select
-                    items={statusOptions}
-                    value={data.status}
-                    onValueChange={(value) =>
-                      setData('status', value as string)
-                    }
+            <section className='h-46.25 overflow-y-auto'>
+              <h4 className='mb-2 font-semibold'>Description</h4>
+              {data.description ? (
+                <DialogDescription className={'h-full'}>
+                  <textarea
+                    onChange={(e) => {
+                      setData('description', e.target.value);
+                    }}
+                    className='h-full w-full text-sm leading-relaxed whitespace-pre-wrap text-slate-700'
+                    defaultValue={data.description}
+                  />
+                </DialogDescription>
+              ) : (
+                <p className='text-sm text-slate-400 italic'>
+                  No description provided.
+                </p>
+              )}
+            </section>
+            <section className='flex gap-2'>
+              <Button type='submit' disabled={processing || !isDirty}>
+                Update
+              </Button>
+              {DeleteAlertModal()}
+            </section>
+          </div>
+
+          <aside className='border-t border-slate-100 bg-slate-50/70 p-6 md:border-t-0 md:border-l'>
+            <dl className='space-y-5'>
+              <Detail label='Status' icon={CircleDotIcon}>
+                <Select
+                  items={statusOptions}
+                  value={data.status}
+                  onValueChange={(value: string) => setData('status', value)}
+                >
+                  <SelectTrigger
+                    type='button'
+                    size='sm'
+                    aria-label='Status'
+                    className='rounded-md border-0 bg-slate-900 pl-2.5 text-xs font-medium text-white'
                   >
-                    <SelectTrigger
-                      type='button'
-                      size='sm'
-                      aria-label='Status'
-                      className='rounded-md border-0 bg-slate-900 pl-2.5 text-xs font-medium text-white'
-                    >
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {statusOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Detail>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {statusOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Detail>
 
-                <Detail label='Severity' icon={FlagIcon}>
-                  <Select
-                    items={severityOptions}
-                    value={data.severity}
-                    onValueChange={(value) =>
-                      setData('severity', value as Ticket['severity'])
-                    }
+              <Detail label='Severity' icon={FlagIcon}>
+                <Select
+                  items={severityOptions}
+                  value={data.severity}
+                  onValueChange={(value: Ticket['severity']) =>
+                    setData('severity', value)
+                  }
+                >
+                  <SelectTrigger
+                    type='button'
+                    size='sm'
+                    aria-label='Severity'
+                    className={`rounded-full border-0 pl-2.5 text-xs font-medium capitalize ring-1 ring-inset ${styles.badge}`}
                   >
-                    <SelectTrigger
-                      type='button'
-                      size='sm'
-                      aria-label='Severity'
-                      className={`rounded-full border-0 pl-2.5 text-xs font-medium capitalize ring-1 ring-inset ${styles.badge}`}
-                    >
-                      <span className={`size-1.5 rounded-full ${styles.dot}`} />
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {severityOptions.map((option) => (
-                        <SelectItem
-                          className={'[&_div]:items-center'}
-                          key={option.value}
-                          value={option.value}
-                        >
-                          <span
-                            className={`size-1.5 rounded-full ${severityStyles[option.value].dot}`}
-                          />
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </Detail>
+                    <span className={`size-1.5 rounded-full ${styles.dot}`} />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {severityOptions.map((option) => (
+                      <SelectItem
+                        className={'[&_div]:items-center'}
+                        key={option.value}
+                        value={option.value}
+                      >
+                        <span
+                          className={`size-1.5 rounded-full ${severityStyles[option.value].dot}`}
+                        />
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Detail>
 
-                <Detail label='Due date' icon={CalendarDaysIcon}>
-                  <div className='flex flex-col items-start gap-1.5'>
-                    <span className='font-medium'>{formatDate(due_date)}</span>
-                    <span
-                      className={`rounded-md px-2 py-0.5 text-xs font-medium ${due.className}`}
-                    >
-                      {due.text}
-                    </span>
-                  </div>
-                </Detail>
-
-                <div className='space-y-3 border-t border-slate-200 pt-5 text-xs text-slate-500'>
-                  <p className='flex items-center gap-1.5'>
-                    <ClockIcon size={13} /> Created {formatDate(created_at)}
-                  </p>
-                  <p className='flex items-center gap-1.5'>
-                    <HistoryIcon size={13} /> Updated {formatDate(updated_at)}
-                  </p>
+              <Detail label='Due date' icon={CalendarDaysIcon}>
+                <div className='flex flex-col items-start gap-1.5'>
+                  <input
+                    value={new Date(data.due_date).toISOString().split('T')[0]}
+                    onChange={(e) => {
+                      setData('due_date', e.target.value);
+                    }}
+                    type='date'
+                    className='font-medium'
+                  />
+                  <span
+                    className={`rounded-md px-2 py-0.5 text-xs font-medium ${due.className}`}
+                  >
+                    {due.text}
+                  </span>
                 </div>
-              </dl>
-            </aside>
-          </form>
-        </DialogContent>
-      </Dialog>
-    </>
+              </Detail>
+
+              <div className='space-y-3 border-t border-slate-200 pt-5 text-xs text-slate-500'>
+                <p className='flex items-center gap-1.5'>
+                  <ClockIcon size={13} /> Created {formatDate(created_at)}
+                </p>
+                <p className='flex items-center gap-1.5'>
+                  <HistoryIcon size={13} /> Updated {formatDate(updated_at)}
+                </p>
+              </div>
+            </dl>
+          </aside>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

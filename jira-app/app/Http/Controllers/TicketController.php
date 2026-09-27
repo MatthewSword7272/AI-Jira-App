@@ -29,7 +29,7 @@ class TicketController extends Controller
             'due_date' => 'required|date'
         ]);
 
-        Ticket::create([...$validated, 'status' => 'Backlog']);
+        Ticket::create([...$validated, 'status' => 'Backlog', 'user_id' => auth()->user()->id]);
 
         return back();
     }
@@ -101,7 +101,7 @@ class TicketController extends Controller
             'due_date' => 'required|date',
         ])->validate();
 
-        Ticket::create([...$validated, 'status' => 'Backlog']);
+        Ticket::create([...$validated, 'status' => 'Backlog', 'user_id' => auth()->user()->id]);
 
         return back();
     }
