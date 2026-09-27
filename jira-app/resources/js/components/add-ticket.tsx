@@ -36,7 +36,7 @@ export default function AddTicket({ severities }: { severities: string[] }) {
     try {
       TicketValidator.parse(formData);
 
-      post(route('ticket.store'));
+      post('/ticket');
 
       setOpen(false);
     } catch {

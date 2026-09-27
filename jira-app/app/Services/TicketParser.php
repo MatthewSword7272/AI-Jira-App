@@ -21,7 +21,9 @@ class TicketParser
                 . 'Today is ' . now()->toDateString() . ' (' . now()->format('l') . '). '
                 . 'Resolve relative dates like "Friday" or "next week" against today. '
                 . 'If no due date is given, use one week from today. '
-                . 'Keep the title under 80 characters and the description under 500.',
+                . 'Keep the title under 80 characters and the description under 500.'
+                . 'For Severity, pick up key words to judge the severity. "important" or "urgent" means high, "no-risk" or "small" means low.'
+                . "If no due date is given, default date to 3 days from now",
             messages: [['role' => 'user', 'content' => $message]],
             outputConfig: [
                 'format' => [

@@ -15,11 +15,17 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $adminRole = Role::firstOrCreate(['name' => 'admin']);
-        $guestRole = Role::firstOrCreate(['name' => 'guest']);
+        $adminRole = Role::firstOrCreate(['name' => 'Admin']);
+        Role::firstOrCreate(['name' => 'Guest']);
 
         $adminPermission = Permission::firstOrCreate(['name' => 'can view all tickets']);
 
         $adminRole->givePermissionTo($adminPermission);
+
+        User::create([
+            'name' => "Matthew Catalfamo",
+            'email' => "sword1005@hotmail.com.au",
+            'password' => 'password',
+        ])->assignRole('Admin');
     }
 }

@@ -106,9 +106,15 @@
     @apply bg-background text-foreground;
   }
   html {
-    @apply font-sans;
+    @apply font-sans overflow-x-clip;
   }
 }
+
+@utility full-bleed {
+  margin-inline: calc(50% - 50vw);
+  width: 100vw;
+}
+
 
 @theme inline {
   --font-heading: var(--font-sans);
